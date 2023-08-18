@@ -43,3 +43,5 @@ from .ppo_trainer import PPOTrainer
 from .reward_trainer import RewardTrainer, compute_accuracy
 from .sft_trainer import SFTTrainer
 from .training_configs import RewardConfig
+from .mpror_config import MPRORConfig
+from .mpror_trainer import MPRORTrainer

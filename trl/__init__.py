@@ -27,6 +27,8 @@ from .trainer import (
     RewardConfig,
     RewardTrainer,
     SFTTrainer,
+    MPRORConfig, 
+    MPRORTrainer
 )
 
 
