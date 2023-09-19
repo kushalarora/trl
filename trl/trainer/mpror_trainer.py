@@ -198,21 +198,19 @@ class MPRORTrainer(PPOTrainer):
                     continue
 
                 new_batch[key] = []
-
                 for i, value in enumerate(values):
-
                     num_rollouts = batch['num_rollouts'][i]
                     if key == "input_ids":
                         input_ids = value
                         output_ids = batch['output_ids'][i]
-                        max_rollin = min(len(output_ids),self.config.max_rollout_length) - len(input_ids)
+                        max_rollin = min(len(output_ids),self.config.max_rollin_length) - len(input_ids)
                         
-                        if not self.config.exclude_first:
+                        if num_rollouts > 0 and not self.config.exclude_first:
                             new_batch[key].append(input_ids)
                             num_rollouts -= 1
-                        if not self.config.exclude_last:
+                        if num_rollouts > 0 and not self.config.exclude_last:
                             new_batch[key].append(
-                                torch.cat((input_ids, output_ids), dim=0))
+                                torch.cat((input_ids, output_ids[:max_rollin]), dim=0))
                             num_rollouts -= 1
 
                         rollin_intervals = range(0, max_rollin, self.config.interval)
@@ -228,6 +226,7 @@ class MPRORTrainer(PPOTrainer):
             prepare_for_rollout,
             batched=True,
             batch_size=self.config.mini_batch_size,
+            load_from_cache_file=False,
         )
         dataset.set_format(type="torch")
     
@@ -265,6 +264,9 @@ class MPRORTrainer(PPOTrainer):
         if generation_kwargs is None:
             generation_kwargs = {}
 
+        generation_kwargs["max_new_tokens"] = generation_kwargs.get(
+            "max_new_tokens", self.config.max_rollout_length
+        )
         if batch_size is None:
             batch_size = self.config.mini_batch_size
         
