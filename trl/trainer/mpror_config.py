@@ -33,6 +33,10 @@ class MPRORConfig(PPOConfig):
         default=128,
         metadata={"help": "Maximum length of rollout trajectories."},
     )
+    max_rollin_length: Optional[int] = field(
+        default=1000,
+        metadata={"help": "Maximum length of rollout trajectories."},
+    )
     exclude_first: Optional[bool] = field(
         default=False,
         metadata={"help": "Do not rollout at first step (t=0)."},
